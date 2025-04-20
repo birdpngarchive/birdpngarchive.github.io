@@ -1,1 +1,129 @@
+<!DOCTYPE html>
+<html>
 
+<head>
+    <title>home</title>
+    <style>
+        body {
+            background-image: url('siteimgs/bg.png');
+            font-family: monospace, courier-new;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            color: white;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        p {
+            color: white;
+        }
+
+        .nav {
+            font-size: 20px;
+            color: blue;
+        }
+
+        .nav a {
+            font-size: 20px;
+            color: blue;
+        }
+
+        a {
+            color: blue;
+        }
+
+        ul {
+            color: white;
+            list-style-type: square;
+        }
+
+        li::marker {
+            color: white;
+        }
+
+        .skin-img {
+            margin: 10px;
+            padding: 10px;
+            float: center;
+            display: inline-block;
+        }
+
+        .skin-img img {
+            border: 2mm ridge rgba(0, 0, 0, 1);
+            width: 200px;
+            height: 200px;
+        }
+
+        .skin-img p {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>BIRD.png Archive</h1>
+    <p>last updated 4/19/25</p>
+    <hr>
+    <table>
+        <tr>
+            <th>name</th>
+            <th>last modified</th>
+            <th>content id</th>
+            <th>filesize</th>
+        </tr>
+        <tr>
+            <td><a href="index.html" class="directories">parent directory/</a></td>
+            <td>4/19/25</td>
+            <td>-</td>
+            <td>-</td>
+        </tr>
+    </table>
+
+    <script>
+        async function calcfilesize() {
+            const rows = document.querySelectorAll('table tr');
+            for (const row of rows) {
+                const link = row.querySelector('a');
+                const sizeCell = row.querySelector('td:last-child');
+                if (link && sizeCell) {
+                    if (link.classList.contains('directories')) {
+                        sizeCell.textContent = '-';
+                        continue;
+                    }
+                    if (link.classList.contains('dir_file')) {
+                        const fileUrl = link.href;
+                        try {
+                            const response = await fetch(fileUrl, {
+                                method: 'HEAD'
+                            });
+                            const contentLength = response.headers.get('Content-Length');
+                            if (contentLength) {
+                                const sizeInBytes = parseInt(contentLength, 10);
+                                sizeCell.textContent = `${sizeInBytes} bytes`;
+                            } else {
+                                sizeCell.textContent = '-';
+                            }
+                        } catch (error) {
+                            sizeCell.textContent = '-';
+                            console.error(error);
+                        }
+                    }
+                }
+            }
+        }
+
+        calculateFileSizes();
+    </script>
+
+    <hr>
+    <p>* all content on site is owned by <a href="https://www.roblox.com/users/81638970/profile">PRGSPY</a> / <a href="https://www.roblox.com/communities/6860049/Team-Frontyard#!/about">Team Frontyard</a></p>
+
+</body>
+
+</html>
