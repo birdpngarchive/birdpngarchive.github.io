@@ -78,31 +78,31 @@
             <th>filesize</th>
         </tr>
         <tr>
-            <td><a href="">skins/</a></td>
+            <td><a href="" class="directories">skins/</a></td>
             <td>4/19/25</td>
             <td>-</td>
             <td>-</td>
         </tr>
         <tr>
-            <td><a href="/builds.html">builds/</a></td>
+            <td><a href="/builds.html" class="directories">builds/</a></td>
             <td>4/19/25</td>
             <td>-</td>
             <td>-</td>
         </tr>
         <tr>
-            <td><a href="">extras/</a></td>
+            <td><a href="" class="directories">extras/</a></td>
             <td>4/19/25</td>
             <td>-</td>
             <td>-</td>
         </tr>
         <tr>
-            <td><a href="https://file.garden/Zdko1-gxzVCR-6XW/gameboxarts/soft_radiant-silvergun.jpg">/test image</a></td>
+            <td><a href="https://file.garden/Zdko1-gxzVCR-6XW/gameboxarts/soft_radiant-silvergun.jpg" class="dir_file">/test image</a></td>
             <td>4/19/25</td>
             <td>-</td>
             <td></td>
         </tr>
         <tr>
-            <td><a href="https://file.garden/Zdko1-gxzVCR-6XW/TEXA_0002-3.bmp">/test image 2</a></td>
+            <td><a href="https://file.garden/Zdko1-gxzVCR-6XW/TEXA_0002-3.bmp" class="dir_file">/test image 2</a></td>
             <td>4/19/25</td>
             <td>-</td>
             <td></td>
@@ -110,31 +110,33 @@
     </table>
 
     <script>
-        async function calculateFileSizes() {
+        async function calcfilesize() {
             const rows = document.querySelectorAll('table tr');
             for (const row of rows) {
                 const link = row.querySelector('a');
                 const sizeCell = row.querySelector('td:last-child');
                 if (link && sizeCell) {
-                    const fileUrl = link.href;
-                    if (!fileUrl || fileUrl === window.location.href) {
+                    if (link.classList.contains('directories')) {
                         sizeCell.textContent = '-';
                         continue;
                     }
-                    try {
-                        const response = await fetch(fileUrl, {
-                            method: 'HEAD'
-                        });
-                        const contentLength = response.headers.get('Content-Length');
-                        if (contentLength) {
-                            const sizeInBytes = parseInt(contentLength, 10);
-                            sizeCell.textContent = `${sizeInBytes} bytes`;
-                        } else {
+                    if (link.classList.contains('dir_file')) {
+                        const fileUrl = link.href;
+                        try {
+                            const response = await fetch(fileUrl, {
+                                method: 'HEAD'
+                            });
+                            const contentLength = response.headers.get('Content-Length');
+                            if (contentLength) {
+                                const sizeInBytes = parseInt(contentLength, 10);
+                                sizeCell.textContent = `${sizeInBytes} bytes`;
+                            } else {
+                                sizeCell.textContent = '-';
+                            }
+                        } catch (error) {
                             sizeCell.textContent = '-';
+                            console.error(error);
                         }
-                    } catch (error) {
-                        sizeCell.textContent = '-';
-                        console.error(error);
                     }
                 }
             }
