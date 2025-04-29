@@ -123,26 +123,36 @@
                     if (link.classList.contains('dir_file')) {
                         const fileUrl = link.href;
                         try {
-                            const response = await fetch(fileUrl, {
-                                method: 'HEAD'
-                            });
-                            const contentLength = response.headers.get('Content-Length');
-                            if (contentLength) {
-                                const sizeInBytes = parseInt(contentLength, 10);
-                                sizeCell.textContent = `${sizeInBytes} bytes`;
+                            let response = await fetch(fileUrl, { method: 'HEAD' });
+                            if (!response.ok) {
+                                console.warn(`HEAD request failed for ${fileUrl}. falling back to GET.`);
+                                response = await fetch(fileUrl, { method: 'GET' });
+                            }
+    
+                            if (response.ok) {
+                                const contentLength = response.headers.get('Content-Length');
+                                if (contentLength) {
+                                    const sizeInBytes = parseInt(contentLength, 10);
+                                    sizeCell.textContent = `${sizeInBytes} bytes`;
+                                } else {
+                                    sizeCell.textContent = 'unknown filesize (no Content-Length)';
+                                }
                             } else {
-                                sizeCell.textContent = '-';
+                                sizeCell.textContent = 'error fetching (HTTP ' + response.status + ')';
                             }
                         } catch (error) {
-                            sizeCell.textContent = '-';
-                            console.error(error);
+                            if (error.name === 'TypeError' && error.message.includes('CORS')) {
+                                sizeCell.textContent = 'CORS error';
+                            } else {
+                                sizeCell.textContent = 'error';
+                            }
+                            console.error(`error fetching filesize for ${fileUrl}:`, error);
                         }
                     }
                 }
             }
         }
-
-        calculateFileSizes();
+        calcfilesize();
     </script>
 
     <hr>
